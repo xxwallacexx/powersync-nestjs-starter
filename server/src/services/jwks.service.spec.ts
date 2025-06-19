@@ -1,6 +1,6 @@
 import { JwksService } from 'src/services/jwks.service';
 import { newTestService, ServiceMocks } from 'test/utils';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe(JwksService.name, () => {
   let sut: JwksService;
@@ -15,7 +15,7 @@ describe(JwksService.name, () => {
 
   describe('getJwks', () => {
     it('should return JWKS with correct structure', () => {
-      const { privateKeyPath } = mocks.config.getEnv();
+      const privateKeyPath = 'test/fixtures/secrets/test_private_key.pem';
       const jwks = sut.getJwks(privateKeyPath ?? '');
       expect(jwks).toBeDefined();
     });
