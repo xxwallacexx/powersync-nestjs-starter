@@ -1,0 +1,49 @@
+name: powersync
+
+services:
+  server:
+    container_name: powersync-server
+    command: ["/usr/src/app/bin/powersync-dev"]
+    build:
+      context: ../
+      dockerfile: server/Dockerfile
+      target: dev
+    restart: unless-stopped
+    volumes:
+      - ../server:/usr/src/app
+      - ./secrets:/app/secrets
+      - /usr/src/app/node_modules
+      - /etc/localtime:/etc/localtime:ro
+    env_file:
+      - .env
+    environment:
+      BUILD_IMAGE: development
+    ports:
+      - 9230:9230
+      - 9231:9231
+      - 4040:4040
+    depends_on:
+      - redis
+    healthcheck:
+      disable: false
+
+  redis:
+    container_name: powersync-redis
+    image: redis:6.2-alpine@sha256:148bb5411c184abd288d9aaed139c98123eeb8824c5d3fce03cf721db58066d8
+    healthcheck:
+      test: redis-cli ping || exit 1
+
+  powersync:
+    container_name: powersync
+    image: journeyapps/powersync-service:latest
+    volumes:
+      - ./config/powersync.config.yaml:/app/powersync.yaml
+      - ./config/sync-rules.config.yaml:/app/sync-rules.config.yaml
+      - ./secrets:/app/secrets
+    env_file:
+      - .env
+    depends_on:
+      - server
+    ports:
+      - 8080:8080
+    restart: unless-stopped

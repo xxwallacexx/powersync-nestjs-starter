@@ -1,0 +1,4 @@
+bucket_definitions:
+  global:
+    data:
+      - select _id as id, * from lists

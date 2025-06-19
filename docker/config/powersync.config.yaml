@@ -1,0 +1,19 @@
+replication:
+  connections:
+    - type: mongodb
+      uri: !env PS_MONGO_DB_URI
+      post_images: auto_configure
+
+storage:
+  type: mongodb
+  uri: !env PS_MONGO_DB_SYNC_URI
+
+port: 8080
+
+sync_rules:
+  path: sync-rules.config.yaml
+
+client_auth:
+  supabase: false
+  jwks_uri: !env PS_JWKS_URI
+  audience: [powersync]
