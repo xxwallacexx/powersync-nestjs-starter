@@ -8,12 +8,17 @@ import { AppEnvironment } from 'src/enum';
 import { WebSocketAdapter } from 'src/middlewares/websocket.adapter';
 import { ConfigRepository } from 'src/repositories/config.repository';
 import { LoggingRepository } from 'src/repositories/logging.repository';
+import { bootstrapTelemetry } from 'src/repositories/telemetry.repository';
 import { ApiService } from 'src/services/api.service';
 import { isStartUpError } from 'src/utils/misc';
 
 async function bootstrap() {
   process.title = 'api';
 
+  const { telemetry } = new ConfigRepository().getEnv();
+  if (telemetry.metrics.size > 0) {
+    bootstrapTelemetry(telemetry.apiPort);
+  }
   const app = await NestFactory.create<NestExpressApplication>(ApiModule, {
     bufferLogs: true,
   });
@@ -40,9 +45,7 @@ async function bootstrap() {
   const server = await (host ? app.listen(port, host) : app.listen(port));
   server.requestTimeout = 24 * 60 * 60 * 1000;
 
-  logger.log(
-    `Server is listening on ${await app.getUrl()} [v${serverVersion}] [${environment}] `,
-  );
+  logger.log(`Server is listening on ${await app.getUrl()} [v${serverVersion}] [${environment}] `);
 }
 
 bootstrap().catch((error) => {
