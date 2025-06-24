@@ -1,12 +1,8 @@
-import {
-  CallHandler,
-  ExecutionContext,
-  Injectable,
-  NestInterceptor,
-} from '@nestjs/common';
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { Observable, finalize } from 'rxjs';
 import { LoggingRepository } from 'src/repositories/logging.repository';
+import { TelemetryRepository } from 'src/repositories/telemetry.repository';
 
 const maxArrayLength = 100;
 const replacer = (key: string, value: unknown) => {
@@ -15,10 +11,7 @@ const replacer = (key: string, value: unknown) => {
   }
 
   if (Array.isArray(value) && value.length > maxArrayLength) {
-    return [
-      ...value.slice(0, maxArrayLength),
-      `...and ${value.length - maxArrayLength} more`,
-    ];
+    return [...value.slice(0, maxArrayLength), `...and ${value.length - maxArrayLength} more`];
   }
 
   return value;
@@ -26,14 +19,15 @@ const replacer = (key: string, value: unknown) => {
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
-  constructor(private logger: LoggingRepository) {
+  constructor(
+    private logger: LoggingRepository,
+    private telemetryRepository: TelemetryRepository,
+  ) {
     this.logger.setContext(LoggingInterceptor.name);
   }
 
-  intercept(
-    context: ExecutionContext,
-    next: CallHandler<any>,
-  ): Observable<any> {
+  intercept(context: ExecutionContext, next: CallHandler<any>): Observable<any> {
+    const traceId = this.telemetryRepository.getTraceId();
     const handler = context.switchToHttp();
     const req = handler.getRequest<Request>();
     const res = handler.getResponse<Response>();
@@ -48,9 +42,10 @@ export class LoggingInterceptor implements NestInterceptor {
         const duration = (finish - start).toFixed(2);
         const { statusCode } = res;
 
-        this.logger.debug(`${method} ${url} ${statusCode} ${duration}ms ${ip}`);
+        this.logger.log(`Request: ${traceId} ${method} ${url} ${statusCode} ${duration}ms ${ip}`);
+
         if (req.body && Object.keys(req.body).length > 0) {
-          this.logger.verbose(JSON.stringify(req.body, replacer));
+          this.logger.log(`Body: ${traceId} ${JSON.stringify(req.body, replacer)}`);
         }
       }),
     );

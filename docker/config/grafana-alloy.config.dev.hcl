@@ -53,3 +53,24 @@ otelcol.auth.basic "creds" {
     username = env("GRAFANA_CLOUD_OTLP_USERNAME") 
     password = env("GRAFANA_CLOUD_OTLP_PASSWORD")
 }
+
+discovery.docker "linux" {
+  host = "unix:///var/run/docker.sock"
+}
+
+loki.source.docker "default" {
+  host = "unix:///var/run/docker.sock"
+  labels     = {"app" = "docker"}
+  targets    = discovery.docker.linux.targets
+  forward_to = [loki.write.dev.receiver]
+}
+
+loki.write "dev" {
+  endpoint {
+    url = env("GRAFANA_CLOUD_LOKI_ENDPOINT")
+    basic_auth {
+	username = env("GRAFANA_CLOUD_LOKI_USERNAME")
+	password = env("GRAFANA_CLOUD_LOKI_PASSWORD")
+    }
+  }
+}

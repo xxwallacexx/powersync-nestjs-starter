@@ -53,6 +53,7 @@ services:
     image: grafana/alloy:latest
     volumes:
       - ./config/grafana-alloy.config.dev.hcl:/etc/alloy/config.alloy
+      - /var/run/docker.sock:/var/run/docker.sock
     env_file:
       - ./secrets/grafana-credentials.env
     command: ["run", "/etc/alloy/config.alloy"]

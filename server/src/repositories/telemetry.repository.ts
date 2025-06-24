@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { MetricOptions } from '@opentelemetry/api';
+import { context, MetricOptions, trace } from '@opentelemetry/api';
 import { AsyncLocalStorageContextManager } from '@opentelemetry/context-async-hooks';
 import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
@@ -113,6 +113,11 @@ export class TelemetryRepository {
     this.api = new MetricGroupRepository(metricService).configure({ enabled: metrics.has(AppTelemetry.API) });
     this.host = new MetricGroupRepository(metricService).configure({ enabled: metrics.has(AppTelemetry.HOST) });
     this.repo = new MetricGroupRepository(metricService).configure({ enabled: metrics.has(AppTelemetry.REPO) });
+  }
+
+  getTraceId() {
+    const span = trace.getSpan(context.active());
+    return span?.spanContext().traceId;
   }
 
   setup({ repositories }: { repositories: ClassConstructor<unknown>[] }) {
