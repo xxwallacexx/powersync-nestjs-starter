@@ -11,7 +11,7 @@ import { isStartUpError } from 'src/utils/misc';
 export async function bootstrap() {
   const { telemetry } = new ConfigRepository().getEnv();
   if (telemetry.metrics.size > 0) {
-    bootstrapTelemetry(telemetry.microservicesPort);
+    bootstrapTelemetry(telemetry.microservicesPort, telemetry.traceExporterUrl);
   }
 
   const app = await NestFactory.create(MicroservicesModule, { bufferLogs: true });

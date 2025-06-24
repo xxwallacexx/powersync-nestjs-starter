@@ -33,6 +33,7 @@ export interface EnvData {
     apiPort: number;
     microservicesPort: number;
     metrics: Set<AppTelemetry>;
+    traceExporterUrl: string;
   };
   privateKeyPath?: string;
 }
@@ -147,6 +148,7 @@ const getEnv = (): EnvData => {
       apiPort: dto.API_METRICS_PORT || 8081,
       microservicesPort: dto.MICROSERVICES_METRICS_PORT || 8082,
       metrics: telemetries,
+      traceExporterUrl: dto.TRACE_EXPORTER_URL || 'http://powersync-grafana-alloy:4318/v1/traces',
     },
     privateKeyPath: PRIVATE_KEY_PATH,
   };

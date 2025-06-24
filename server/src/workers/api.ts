@@ -17,7 +17,7 @@ async function bootstrap() {
 
   const { telemetry } = new ConfigRepository().getEnv();
   if (telemetry.metrics.size > 0) {
-    bootstrapTelemetry(telemetry.apiPort);
+    bootstrapTelemetry(telemetry.apiPort, telemetry.traceExporterUrl);
   }
   const app = await NestFactory.create<NestExpressApplication>(ApiModule, {
     bufferLogs: true,

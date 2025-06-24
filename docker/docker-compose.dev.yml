@@ -52,7 +52,7 @@ services:
     container_name: powersync-grafana-alloy
     image: grafana/alloy:latest
     volumes:
-      - ./config/grafana-alloy-config.dev.hcl:/etc/alloy/config.alloy
+      - ./config/grafana-alloy.config.dev.hcl:/etc/alloy/config.alloy
     env_file:
       - ./secrets/grafana-credentials.env
     command: ["run", "/etc/alloy/config.alloy"]

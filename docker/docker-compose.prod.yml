@@ -17,14 +17,14 @@ services:
     healthcheck:
       disable: false
 
-grafana-alloy:
-  container_name: powersync-grafana-alloy
-  image: grafana/alloy:latest
-  volumes:
-    - ./config/grafana-alloy.config.hcl:/etc/alloy/config.alloy
-  env_file:
-    - ./secrets/grafana-credentials.env
-  command: ["run", "/etc/alloy/config.alloy"]
-  restart: unless-stopped
-  depends_on:
-    - server
+  grafana-alloy:
+    container_name: powersync-grafana-alloy
+    image: grafana/alloy:latest
+    volumes:
+      - ./config/grafana-alloy.config.hcl:/etc/alloy/config.alloy
+    env_file:
+      - ./secrets/grafana-credentials.env
+    command: ["run", "/etc/alloy/config.alloy"]
+    restart: unless-stopped
+    depends_on:
+      - server

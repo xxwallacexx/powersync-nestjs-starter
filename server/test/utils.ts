@@ -8,8 +8,8 @@ import { EventRepository } from 'src/repositories/event.repository';
 import { LoggingRepository } from 'src/repositories/logging.repository';
 import { BaseService } from 'src/services/base.service';
 import { RepositoryInterface } from 'src/types';
+import { newConfigRepositoryMock } from 'test/repositories/config.repository.mock';
 import { assert, Mock, Mocked, vitest } from 'vitest';
-import { newConfigRepositoryMock } from './repositories/config.repository.mock';
 
 export type ControllerContext = {
   getHttpServer: () => any;
