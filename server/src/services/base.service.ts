@@ -8,10 +8,10 @@ import { TelemetryRepository } from 'src/repositories/telemetry.repository';
 @Injectable()
 export class BaseService {
   constructor(
-    protected databaseRepository: DatabaseRepository,
     protected logger: LoggingRepository,
     protected configRepository: ConfigRepository,
     protected eventRepository: EventRepository,
+    protected databaseRepository: DatabaseRepository,
     protected telemetryRepository: TelemetryRepository,
   ) {
     this.logger.setContext(this.constructor.name);

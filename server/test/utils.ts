@@ -3,12 +3,15 @@ import { APP_PIPE } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { ClassConstructor } from 'class-transformer';
 import { ConfigRepository } from 'src/repositories/config.repository';
+import { DatabaseRepository } from 'src/repositories/database.repository';
 import { EventRepository } from 'src/repositories/event.repository';
-
 import { LoggingRepository } from 'src/repositories/logging.repository';
+import { TelemetryRepository } from 'src/repositories/telemetry.repository';
 import { BaseService } from 'src/services/base.service';
 import { RepositoryInterface } from 'src/types';
 import { newConfigRepositoryMock } from 'test/repositories/config.repository.mock';
+import { newDatabaseRepositoryMock } from 'test/repositories/database.repository.mock';
+import { ITelemetryRepositoryMock, newTelemetryRepositoryMock } from 'test/repositories/telemetry.repository.mock';
 import { assert, Mock, Mocked, vitest } from 'vitest';
 
 export type ControllerContext = {
@@ -102,8 +105,9 @@ export const automock = <T>(
 };
 
 export type ServiceMocks = {
-  [K in keyof ServiceOverrides]: Mocked<RepositoryInterface<ServiceOverrides[K]>>;
-};
+  [K in keyof Omit<ServiceOverrides, 'telemetry'>]: Mocked<RepositoryInterface<ServiceOverrides[K]>>;
+} & { telemetry: ITelemetryRepositoryMock };
+
 type BaseServiceArgs = ConstructorParameters<typeof BaseService>;
 type Constructor<Type, Args extends Array<any>> = {
   new (...deps: Args): Type;
@@ -120,12 +124,16 @@ export const newTestService = <T extends BaseService>(
     // eslint-disable-next-line no-sparse-arrays
     logger: automock(LoggingRepository, { args: [, configMock], strict: false }),
     event: automock(EventRepository, { args: [, , loggerMock], strict: false }),
+    database: newDatabaseRepositoryMock(),
     config: newConfigRepositoryMock(),
+    telemetry: newTelemetryRepositoryMock(),
   };
   const sut = new Service(
     overrides.logger || (mocks.logger as As<LoggingRepository>),
     overrides.config || (mocks.config as As<ConfigRepository>),
     overrides.event || (mocks.event as As<EventRepository>),
+    overrides.database || (mocks.database as As<DatabaseRepository>),
+    overrides.telemetry || (mocks.telemetry as unknown as TelemetryRepository),
   );
   return { sut, mocks };
 };
@@ -134,4 +142,6 @@ export type ServiceOverrides = {
   config: ConfigRepository;
   event: EventRepository;
   logger: LoggingRepository;
+  database: DatabaseRepository;
+  telemetry: TelemetryRepository;
 };
