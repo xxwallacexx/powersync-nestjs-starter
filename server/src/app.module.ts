@@ -1,6 +1,7 @@
 import { BullModule } from '@nestjs/bullmq';
 import { Inject, Module, OnModuleDestroy, OnModuleInit, ValidationPipe } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule, SchedulerRegistry } from '@nestjs/schedule';
 import { ClsModule } from 'nestjs-cls';
 import { OpenTelemetryModule } from 'nestjs-otel';
@@ -30,9 +31,10 @@ const middleware = [
 ];
 
 const configRepository = new ConfigRepository();
-const { bull, cls, otel } = configRepository.getEnv();
+const { bull, cls, otel, mongodbUri } = configRepository.getEnv();
 
 const imports = [
+  MongooseModule.forRoot(mongodbUri),
   BullModule.forRoot(bull.config),
   BullModule.registerQueue(...bull.queues),
   ClsModule.forRoot(cls.config),

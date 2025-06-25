@@ -6,14 +6,7 @@ import { LogLevel } from 'src/enum';
 type LogDetails = any[];
 type LogFunction = () => string;
 
-const LOG_LEVELS = [
-  LogLevel.VERBOSE,
-  LogLevel.DEBUG,
-  LogLevel.LOG,
-  LogLevel.WARN,
-  LogLevel.ERROR,
-  LogLevel.FATAL,
-];
+const LOG_LEVELS = [LogLevel.VERBOSE, LogLevel.DEBUG, LogLevel.LOG, LogLevel.WARN, LogLevel.ERROR, LogLevel.FATAL];
 
 enum LogColor {
   RED = 31,
@@ -25,12 +18,7 @@ enum LogColor {
 }
 
 let appName: string | undefined;
-let logLevels: LogLevel[] = [
-  LogLevel.LOG,
-  LogLevel.WARN,
-  LogLevel.ERROR,
-  LogLevel.FATAL,
-];
+let logLevels: LogLevel[] = [LogLevel.LOG, LogLevel.WARN, LogLevel.ERROR, LogLevel.FATAL];
 
 export class MyConsoleLogger extends ConsoleLogger {
   private isColorEnabled: boolean;
@@ -70,8 +58,7 @@ export class MyConsoleLogger extends ConsoleLogger {
     green: (text: string) => this.withColor(text, LogColor.GREEN),
     yellow: (text: string) => this.withColor(text, LogColor.YELLOW),
     blue: (text: string) => this.withColor(text, LogColor.BLUE),
-    magentaBright: (text: string) =>
-      this.withColor(text, LogColor.MAGENTA_BRIGHT),
+    magentaBright: (text: string) => this.withColor(text, LogColor.MAGENTA_BRIGHT),
     cyanBright: (text: string) => this.withColor(text, LogColor.CYAN_BRIGHT),
   };
 
@@ -143,21 +130,13 @@ export class LoggingRepository {
     this.handleMessage(LogLevel.FATAL, message, details);
   }
 
-  private handleFunction(
-    level: LogLevel,
-    message: LogFunction,
-    details: LogDetails[],
-  ) {
+  private handleFunction(level: LogLevel, message: LogFunction, details: LogDetails[]) {
     if (this.logger.isLevelEnabled(level)) {
       this.handleMessage(level, message(), details);
     }
   }
 
-  private handleMessage(
-    level: LogLevel,
-    message: string | Error,
-    details: LogDetails[],
-  ) {
+  private handleMessage(level: LogLevel, message: string | Error, details: LogDetails[]) {
     switch (level) {
       case LogLevel.VERBOSE: {
         this.logger.verbose(message, ...details);

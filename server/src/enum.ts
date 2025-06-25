@@ -42,6 +42,8 @@ export enum AppQuery {
 
 export enum BootstrapEventPriority {
   // Initialise config after other bootstrap services, stop other services from using config on bootstrap
+  // DatabaseService should initialized before anything
+  DatabaseService = -200,
   SystemConfig = 100,
 }
 
