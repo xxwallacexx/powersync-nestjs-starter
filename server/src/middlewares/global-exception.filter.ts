@@ -1,12 +1,8 @@
-import {
-  ArgumentsHost,
-  Catch,
-  ExceptionFilter,
-  HttpException,
-} from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from '@nestjs/common';
 import { Response } from 'express';
 import { ClsService } from 'nestjs-cls';
 import { LoggingRepository } from 'src/repositories/logging.repository';
+import { TelemetryRepository } from 'src/repositories/telemetry.repository';
 import { logGlobalError } from 'src/utils/logger';
 
 @Catch()
@@ -14,6 +10,7 @@ export class GlobalExceptionFilter implements ExceptionFilter<Error> {
   constructor(
     private logger: LoggingRepository,
     private cls: ClsService,
+    private telemetryRepository: TelemetryRepository,
   ) {
     this.logger.setContext(GlobalExceptionFilter.name);
   }
@@ -23,23 +20,19 @@ export class GlobalExceptionFilter implements ExceptionFilter<Error> {
     const response = ctx.getResponse<Response>();
     const { status, body } = this.fromError(error);
     if (!response.headersSent) {
-      response
-        .status(status)
-        .json({ ...body, statusCode: status, correlationId: this.cls.getId() });
+      response.status(status).json({ ...body, statusCode: status, correlationId: this.cls.getId() });
     }
   }
 
   handleError(res: Response, error: Error) {
     const { status, body } = this.fromError(error);
     if (!res.headersSent) {
-      res
-        .status(status)
-        .json({ ...body, statusCode: status, correlationId: this.cls.getId() });
+      res.status(status).json({ ...body, statusCode: status, correlationId: this.cls.getId() });
     }
   }
 
   private fromError(error: Error) {
-    logGlobalError(this.logger, error);
+    logGlobalError(this.logger, this.telemetryRepository, error);
 
     if (error instanceof HttpException) {
       const status = error.getStatus();

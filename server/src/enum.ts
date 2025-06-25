@@ -9,6 +9,13 @@ export enum AppWorker {
   MICROSERVICES = 'microservices',
 }
 
+export enum AppTelemetry {
+  HOST = 'host',
+  API = 'api',
+  IO = 'io',
+  REPO = 'repo',
+}
+
 export enum LogLevel {
   VERBOSE = 'verbose',
   DEBUG = 'debug',
@@ -20,6 +27,7 @@ export enum LogLevel {
 
 export enum MetadataKey {
   EVENT_CONFIG = 'event_config',
+  TELEMETRY_ENABLED = 'telemetry_enabled',
 }
 
 export enum AppHeader {

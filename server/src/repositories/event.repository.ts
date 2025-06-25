@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { SystemConfig } from 'src/config';
 import { ModuleRef, Reflector } from '@nestjs/core';
-import { ConfigRepository } from './config.repository';
-import { LoggingRepository } from './logging.repository';
 import { ClassConstructor } from 'class-transformer';
 import _ from 'lodash';
-import { AppWorker, MetadataKey } from 'src/enum';
+import { SystemConfig } from 'src/config';
 import { EventConfig } from 'src/decorators';
+import { AppWorker, MetadataKey } from 'src/enum';
+import { ConfigRepository } from 'src/repositories/config.repository';
+import { LoggingRepository } from 'src/repositories/logging.repository';
 
 export type EventItem<T extends EmitEvent> = {
   event: T;
@@ -74,10 +74,7 @@ export class EventRepository {
           continue;
         }
 
-        const event = reflector.get<EventConfig>(
-          MetadataKey.EVENT_CONFIG,
-          handler,
-        );
+        const event = reflector.get<EventConfig>(MetadataKey.EVENT_CONFIG, handler);
         if (!event) {
           continue;
         }
@@ -114,9 +111,7 @@ export class EventRepository {
     this.emitHandlers[event].push(item);
   }
 
-  private async onEvent<T extends EmitEvent>(event: {
-    name: T;
-  }): Promise<void> {
+  private async onEvent<T extends EmitEvent>(event: { name: T }): Promise<void> {
     const handlers = this.emitHandlers[event.name] || [];
     for (const { handler } of handlers) {
       // exclude handlers that ignore server events

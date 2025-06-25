@@ -47,3 +47,16 @@ services:
     ports:
       - 8080:8080
     restart: unless-stopped
+
+  grafana-alloy:
+    container_name: powersync-grafana-alloy
+    image: grafana/alloy:latest
+    volumes:
+      - ./config/grafana-alloy.config.hcl:/etc/alloy/config.alloy
+      - /var/run/docker.sock:/var/run/docker.sock
+    env_file:
+      - ./secrets/grafana-credentials.dev.env
+    command: ["run", "/etc/alloy/config.alloy"]
+    restart: unless-stopped
+    depends_on:
+      - server

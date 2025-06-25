@@ -88,4 +88,8 @@ export class EnvDto {
   @IsString()
   @Optional()
   PRIVATE_KEY_PATH?: string;
+
+  @IsString()
+  @Optional()
+  TRACE_EXPORTER_URL?: string;
 }

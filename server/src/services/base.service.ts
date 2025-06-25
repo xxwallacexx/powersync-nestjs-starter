@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigRepository } from 'src/repositories/config.repository';
 import { EventRepository } from 'src/repositories/event.repository';
 import { LoggingRepository } from 'src/repositories/logging.repository';
+import { TelemetryRepository } from 'src/repositories/telemetry.repository';
 
 @Injectable()
 export class BaseService {
@@ -9,6 +10,7 @@ export class BaseService {
     protected logger: LoggingRepository,
     protected configRepository: ConfigRepository,
     protected eventRepository: EventRepository,
+    protected telemetryRepository: TelemetryRepository,
   ) {
     this.logger.setContext(this.constructor.name);
   }

@@ -6,9 +6,10 @@ import { validateSync } from 'class-validator';
 import { Request, Response } from 'express';
 import { RedisOptions } from 'ioredis';
 import { CLS_ID, ClsModuleOptions, ClsService } from 'nestjs-cls';
-import { IWorker } from 'src/constants';
+import { OpenTelemetryModuleOptions } from 'nestjs-otel/lib/interfaces';
+import { excludePaths, IWorker } from 'src/constants';
 import { EnvDto } from 'src/dtos/env.dto';
-import { AppEnvironment, AppHeader, AppWorker, LogLevel, QueueName } from 'src/enum';
+import { AppEnvironment, AppHeader, AppTelemetry, AppWorker, LogLevel, QueueName } from 'src/enum';
 import { asSet, setDifference } from 'src/utils/set';
 
 export interface EnvData {
@@ -27,10 +28,18 @@ export interface EnvData {
     config: ClsModuleOptions;
   };
   logLevel: LogLevel;
+  otel: OpenTelemetryModuleOptions;
+  telemetry: {
+    apiPort: number;
+    microservicesPort: number;
+    metrics: Set<AppTelemetry>;
+    traceExporterUrl: string;
+  };
   privateKeyPath?: string;
 }
 
 const WORKER_TYPES = new Set(Object.values(AppWorker));
+const TELEMETRY_TYPES = new Set(Object.values(AppTelemetry));
 
 const getEnv = (): EnvData => {
   const dto = plainToInstance(EnvDto, process.env);
@@ -47,6 +56,19 @@ const getEnv = (): EnvData => {
   for (const worker of workers) {
     if (!WORKER_TYPES.has(worker)) {
       throw new Error(`Invalid worker(s) found: ${workers.join(',')}`);
+    }
+  }
+
+  const includedTelemetries =
+    dto.TELEMETRY_INCLUDE === 'all'
+      ? new Set(Object.values(AppTelemetry))
+      : asSet<AppTelemetry>(dto.TELEMETRY_INCLUDE, []);
+
+  const excludedTelemetries = asSet<AppTelemetry>(dto.TELEMETRY_EXCLUDE, []);
+  const telemetries = setDifference(includedTelemetries, excludedTelemetries);
+  for (const telemetry of telemetries) {
+    if (!TELEMETRY_TYPES.has(telemetry)) {
+      throw new Error(`Invalid telemetry found: ${telemetry}`);
     }
   }
 
@@ -113,6 +135,21 @@ const getEnv = (): EnvData => {
     bull,
     cls,
     logLevel: LOG_LEVEL ?? LogLevel.VERBOSE,
+    otel: {
+      metrics: {
+        hostMetrics: telemetries.has(AppTelemetry.HOST),
+        apiMetrics: {
+          enable: telemetries.has(AppTelemetry.API),
+          ignoreRoutes: excludePaths,
+        },
+      },
+    },
+    telemetry: {
+      apiPort: dto.API_METRICS_PORT || 8081,
+      microservicesPort: dto.MICROSERVICES_METRICS_PORT || 8082,
+      metrics: telemetries,
+      traceExporterUrl: dto.TRACE_EXPORTER_URL || 'http://powersync-grafana-alloy:4318/v1/traces',
+    },
     privateKeyPath: PRIVATE_KEY_PATH,
   };
 };
