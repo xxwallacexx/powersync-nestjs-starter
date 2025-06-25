@@ -1,30 +1,19 @@
 import { applyDecorators } from '@nestjs/common';
 import { Transform } from 'class-transformer';
-import {
-  IsBoolean,
-  IsOptional,
-  ValidateIf,
-  ValidationOptions,
-} from 'class-validator';
+import { IsBoolean, IsOptional, ValidateIf, ValidationOptions } from 'class-validator';
 
 export interface OptionalOptions extends ValidationOptions {
   nullable?: boolean;
   emptyToNull?: boolean;
 }
 
-export function Optional({
-  nullable,
-  emptyToNull,
-  ...validationOptions
-}: OptionalOptions = {}) {
+export function Optional({ nullable, emptyToNull, ...validationOptions }: OptionalOptions = {}) {
   const decorators: PropertyDecorator[] = [];
 
   if (nullable === true) {
     decorators.push(IsOptional(validationOptions));
   } else {
-    decorators.push(
-      ValidateIf((object: any, v: any) => v !== undefined, validationOptions),
-    );
+    decorators.push(ValidateIf((object: any, v: any) => v !== undefined, validationOptions));
   }
 
   if (emptyToNull) {

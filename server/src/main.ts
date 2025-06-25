@@ -30,9 +30,7 @@ function bootstrapWorker(name: AppWorker) {
   let worker: Worker | ChildProcess;
   if (name === AppWorker.API) {
     worker = fork(`./dist/workers/${name}.js`, [], {
-      execArgv: process.execArgv.map((arg) =>
-        arg.startsWith('--inspect') ? '--inspect=0.0.0.0:9231' : arg,
-      ),
+      execArgv: process.execArgv.map((arg) => (arg.startsWith('--inspect') ? '--inspect=0.0.0.0:9231' : arg)),
     });
     apiProcess = worker;
   } else {

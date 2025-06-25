@@ -11,5 +11,4 @@ export type EventConfig = {
   /** register events for these workers, defaults to all workers */
   workers?: AppWorker[];
 };
-export const OnEvent = (config: EventConfig) =>
-  SetMetadata(MetadataKey.EVENT_CONFIG, config);
+export const OnEvent = (config: EventConfig) => SetMetadata(MetadataKey.EVENT_CONFIG, config);

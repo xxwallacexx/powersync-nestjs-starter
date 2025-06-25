@@ -27,6 +27,7 @@ export interface EnvData {
   cls: {
     config: ClsModuleOptions;
   };
+  mongodbUri: string;
   logLevel: LogLevel;
   otel: OpenTelemetryModuleOptions;
   telemetry: {
@@ -144,6 +145,7 @@ const getEnv = (): EnvData => {
         },
       },
     },
+    mongodbUri: dto.MONGO_DB_URI || 'mongodb://localhost/nestjs',
     telemetry: {
       apiPort: dto.API_METRICS_PORT || 8081,
       microservicesPort: dto.MICROSERVICES_METRICS_PORT || 8082,
