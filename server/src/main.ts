@@ -41,7 +41,7 @@ function bootstrapWorker(name: AppWorker) {
   worker.on('exit', (exitCode) => onExit(name, exitCode));
 }
 
-async function bootstrap() {
+function bootstrap() {
   process.title = 'powerSync';
   const { workers } = new ConfigRepository().getEnv();
   for (const worker of workers) {

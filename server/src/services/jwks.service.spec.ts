@@ -4,9 +4,9 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 describe(JwksService.name, () => {
   let sut: JwksService;
-  let mocks: ServiceMocks;
+  let _mocks: ServiceMocks;
   beforeEach(() => {
-    ({ sut, mocks } = newTestService(JwksService));
+    ({ sut, mocks: _mocks } = newTestService(JwksService));
   });
 
   it('should work', () => {
