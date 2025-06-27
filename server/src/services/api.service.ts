@@ -9,7 +9,7 @@ export class ApiService {
   }
 
   ssr(excludePaths: string[]) {
-    return async (request: Request, res: Response, next: NextFunction) => {
+    return (request: Request, res: Response, next: NextFunction) => {
       if (
         request.url.startsWith('/api') ||
         request.method.toLowerCase() !== 'get' ||

@@ -88,7 +88,7 @@ const getEnv = (): EnvData => {
     PRIVATE_KEY_PATH,
   } = dto;
 
-  let redisConfig = {
+  const redisConfig = {
     host: REDIS_HOSTNAME || 'redis',
     port: REDIS_PORT || 6379,
     db: REDIS_DBINDEX || 0,

@@ -12,7 +12,9 @@ export class JwksController {
   @Get()
   getJwks() {
     const { privateKeyPath } = this.configRespository.getEnv();
-    if (!privateKeyPath) throw new InternalServerErrorException('no private key path');
+    if (!privateKeyPath) {
+      throw new InternalServerErrorException('no private key path');
+    }
     return this.jwksService.getJwks(privateKeyPath);
   }
 }
