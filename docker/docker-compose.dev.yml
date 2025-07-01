@@ -33,21 +33,6 @@ services:
     healthcheck:
       test: redis-cli ping || exit 1
 
-  powersync:
-    container_name: powersync
-    image: journeyapps/powersync-service:latest
-    volumes:
-      - ./config/powersync.config.yaml:/app/powersync.yaml
-      - ./config/sync-rules.config.yaml:/app/sync-rules.config.yaml
-      - ./secrets:/app/secrets
-    env_file:
-      - .env
-    depends_on:
-      - server
-    ports:
-      - 8080:8080
-    restart: unless-stopped
-
   grafana-alloy:
     container_name: powersync-grafana-alloy
     image: grafana/alloy:latest
